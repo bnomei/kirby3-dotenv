@@ -22,7 +22,7 @@ KIRBY_API_USER=bnomei
 KIRBY_API_PW=52d3a0edcc78be6c5645fdb7568f94d3d83d1c2a
 ```
 
-**plugins helper methods**
+**plugin helper methods**
 ```php
 echo env('APP_MODE'); // production
 // or
@@ -62,5 +62,5 @@ It is discouraged to use this plugin in any project that promotes racism, sexism
 
 ## Credits
 
-based on V2 version of
+based on K2 version of
 - https://github.com/jevets/kirby-phpdotenv
