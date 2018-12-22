@@ -17,7 +17,7 @@ Kirby::plugin('bnomei/dotenv', [
 ]);
 
 if (!class_exists('Bnomei\DotEnv')) {
-    require_once __DIR__ . '/classes/dotenv.php';
+    require_once __DIR__ . '/classes/DotEnv.php';
 }
 
 if (!function_exists('env')) {

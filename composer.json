@@ -1,42 +1,56 @@
 {
-  "name": "bnomei/kirby3-dotenv",
-  "type": "plugin",
-  "version": "1.0.1",
-  "description": "Kirby 3 Plugin for environment variables from .env",
-  "license": "MIT",
-  "autoload": {
-      "files": [
-          "config.php"
-      ],
-      "psr-4": {
-          "Bnomei\\": "classes/"
-      }
-  },
-  "authors": [
-      {
-          "name": "Bruno Meilick",
-          "email": "b@bnomei.com"
-      }
-  ],
-  "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/k-next/kirby"
-      }
+    "name": "bnomei/kirby3-dotenv",
+    "type": "plugin",
+    "version": "1.0.2",
+    "description": "Kirby 3 Plugin for environment variables from .env",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bruno Meilick",
+            "email": "b@bnomei.com"
+        }
     ],
-  "require": {
-      "vlucas/phpdotenv": "^2.5",
-    "getkirby/cms": "dev-master as 3.0.0"
-  },
-  "require-dev" : {
-  },
-  "scripts": {
-      "build": "composer update; composer dumpautoload -o;",
-      "dev-zip": "rm kirby3-dotenv.zip; composer remove getkirby/cms; composer dumpautoload -o; composer archive --format=zip --file=kirby3-dotenv; composer require getkirby/cms:'dev-master as 3.0.0'; composer dumpautoload -o;",
-      "zip": "rm kirby3-dotenv.zip; composer update; composer remove getkirby/cms; composer dumpautoload -o; zip -r kirby3-dotenv.zip . -x *.git*; composer require getkirby/cms:'dev-master as 3.0.0'; composer dumpautoload -o;"
-  },
-  "config": {
-    "optimize-autoloader": true
-  },
-  "minimum-stability": "beta"
+    "keywords": [
+        "kirby3",
+        "kirby3-cms",
+        "kirby3-plugin",
+        "dotenv",
+        "dotenv-loader",
+        "enviroment-variables"
+    ],
+    "autoload": {
+        "files": [
+            "config.php"
+        ],
+        "psr-4": {
+            "Bnomei\\": "classes/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/k-next/kirby"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "getkirby/cms": "^3.0.0-RC-2.0"
+    },
+    "conflict": {
+        "getkirby/kirby": "<3.0"
+    },
+    "scripts": {
+        "zip": [
+            "rm kirby3-dotenv.zip",
+            "composer install --no-dev",
+            "composer remove getkirby/cms",
+            "composer dumpautoload -o",
+            "zip -r kirby3-dotenv.zip . -x *.git*",
+            "composer require getkirby/cms:'^3.0.0-RC-2.0'"
+        ]
+    }
 }
