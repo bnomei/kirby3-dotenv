@@ -11,6 +11,14 @@ This plugin is free but if you use it in a commercial project please consider to
 - [buy me ☕](https://buymeacoff.ee/bnomei) or
 - [buy a Kirby license using this affiliate link](https://a.paddle.com/v2/click/1129/35731?link=1170)
 
+## Installation
+
+- for devkit-setup use `composer require bnomei/kirby3-dotenv` or
+- extract latest release of [kirby3-dotenv.zip](https://github.com/bnomei/kirby3-dotenv/releases/download/v1.0.5/kirby3-dotenv.zip) as folder `site/plugins/kirby3-dotenv`
+
+> Installation as a gitsubmodule is *not* supported.
+
+
 ## Setup
 
 **.env file**
