@@ -48,7 +48,7 @@ All settings need to be prefixed with `bnomei.dotenv.`.
 **dir**
 - default: a callback returning `kirby()->roots()->index()`
 
-> TIP: for Kirby 3 Devit setup use `realpath(kirby()->roots()->index() . '/../');`
+> TIP: when installing Kirby 3 with Composer use a `function() { return realpath(kirby()->roots()->index() . '/../'); }`
 
 **filename**
 - default: `.env`
