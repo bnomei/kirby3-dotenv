@@ -37,7 +37,7 @@ echo $page->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6
 
 **plain php**
 ```php
-Bnomei\Dotenv::load();
+Bnomei\DotEnv::load();
 echo getenv('APP_DEBUG'); // true
 ```
 
