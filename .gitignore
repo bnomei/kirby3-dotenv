@@ -1,5 +1,13 @@
 # OS files
 .DS_Store
+.idea
+*.cache
+
+/tests/kirby
+/tests/logs
+/tests/accounts
+/tests/cache
+/tests/media
 
 # files of Composer dependencies that are not needed for the plugin
 /vendor/**/.*

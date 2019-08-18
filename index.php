@@ -9,16 +9,16 @@ Kirby::plugin('bnomei/dotenv', [
         // return realpath(kirby()->roots()->index() . '/../');
         },
         'filename' => '.env',
-        'required' => []
+        'required' => [],
     ],
     'pageMethods' => [
         'getenv' => function (string $env) {
             return \Bnomei\DotEnv::getenv($env);
-        }
-    ]
+        },
+    ],
 ]);
 
-if (!function_exists('env')) {
+if (! function_exists('env')) {
     function env(string $env)
     {
         return \Bnomei\DotEnv::getenv($env);

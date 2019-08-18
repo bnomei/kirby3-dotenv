@@ -1,6 +1,6 @@
 # Kirby 3 DotEnv
 
-![GitHub release](https://img.shields.io/github/release/bnomei/kirby3-dotenv.svg?maxAge=1800) ![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby Version](https://img.shields.io/badge/Kirby-3%2B-black.svg) ![Kirby 3 Pluginkit](https://img.shields.io/badge/Pluginkit-YES-cca000.svg)
+![GitHub release](https://img.shields.io/github/release/bnomei/kirby3-dotenv.svg?maxAge=1800) ![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby Version](https://img.shields.io/badge/Kirby-3%2B-black.svg) ![Kirby 3 Pluginkit](https://img.shields.io/badge/Pluginkit-YES-cca000.svg) [![Build Status](https://travis-ci.com/bnomei/kirby3-dotenv.svg?branch=master)](https://travis-ci.com/bnomei/kirby3-dotenv) [![Coverage Status](https://coveralls.io/repos/github/bnomei/kirby3-dotenv/badge.svg?branch=master)](https://coveralls.io/github/bnomei/kirby3-dotenv?branch=master) [![Gitter](https://badges.gitter.im/bnomei-kirby-3-plugins/community.svg)](https://gitter.im/bnomei-kirby-3-plugins/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Kirby 3 Plugin for environment variables from .env using [vlucas/phpdotenv](https://github.com/vlucas/phpdotenv).
 
@@ -40,6 +40,10 @@ echo $page->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6
 Bnomei\Dotenv::load();
 echo getenv('APP_DEBUG'); // true
 ```
+
+### Required Variables (optional)
+
+You can define required variables in the Settings using an array. If any of these is missing a `RuntimeException` will be thrown.
 
 ## Settings
 
