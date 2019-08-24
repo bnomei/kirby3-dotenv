@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Bnomei;
 
 use Dotenv\Exception\InvalidPathException;
+use Kirby\Toolkit\A;
+use function getenv;
+use function option;
 
 final class DotEnv
 {
@@ -16,13 +19,13 @@ final class DotEnv
     public function __construct(array $options = [])
     {
         $defaults = [
-            'dir' => \option('bnomei.dotenv.dir', kirby()->roots()->index()),
-            'required' => \option('bnomei.dotenv.required'),
+            'dir' => option('bnomei.dotenv.dir', kirby()->roots()->index()),
+            'required' => option('bnomei.dotenv.required'),
         ];
         $options = array_merge($defaults, $options);
 
-        $this->loadFromDir(\Kirby\Toolkit\A::get($options, 'dir'));
-        $this->addRequired(\Kirby\Toolkit\A::get($options, 'required'));
+        $this->loadFromDir(A::get($options, 'dir'));
+        $this->addRequired(A::get($options, 'required'));
     }
 
     private function loadFromDir($dir): bool
@@ -69,6 +72,6 @@ final class DotEnv
     public static function getenv(string $env)
     {
         self::load();
-        return \getenv($env);
+        return getenv($env);
     }
 }
