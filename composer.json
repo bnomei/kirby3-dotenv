@@ -52,5 +52,11 @@
   },
   "extra": {
     "kirby-cms-path": "tests/kirby"
+  },
+  "suggest": {
+    "bnomei/kirby3-lapse": "For faster and automatic caching based on modification of Kirby Objects",
+    "bnomei/kirby3-janitor": "Use a Panel Button or PHP code to clear the cache",
+    "bnomei/kirby3-security-headers": "CPS headers to make the the web a saver place. Sensible defaults with zero configuration.",
+    "robinscholz/better-rest": "Allows you to send authenticated GET requests querying the Kirby API"
   }
 }
