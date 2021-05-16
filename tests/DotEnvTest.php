@@ -54,7 +54,7 @@ class DotEnvTest extends TestCase
         ]);
         $this->assertTrue($dotenv->isLoaded());
 
-        $this->expectExceptionMessageRegExp('/(One or more environment variables failed assertions: DATABASE_DSN is missing)/');
+        $this->expectExceptionMessageMatches('/(One or more environment variables failed assertions: DATABASE_DSN is missing)/');
         $dotenv = new Bnomei\DotEnv([
             'required' => ['DATABASE_DSN']
         ]);
@@ -63,7 +63,7 @@ class DotEnvTest extends TestCase
     public function testGetenv()
     {
         $myself = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertRegExp('/(bnomei)/', $myself);
+        $this->assertMatchesRegularExpression('/(bnomei)/', $myself);
     }
 
     public function testStaticLoad()
