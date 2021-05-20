@@ -49,19 +49,43 @@ echo env('APP_DEBUG'); // true
 
 ### Using getenv() in the Kirby config file
 
-**site/config/config.php**
+**site/config/config.php (callbacks only)**
 ```php
+<?php
 return [
     // ... other options
     'bnomei.cloudconvert.apikey' => function() { 
-        return env('CLOUDCONVERT_APIKEY'); 
+        return getenv('CLOUDCONVERT_APIKEY'); 
     },
     'bnomei.instagram.token' => function() { 
-        return env('INSTAGRAM_TOKEN'); 
+        return getenv('INSTAGRAM_TOKEN'); 
     },
     'bnomei.thumbimageoptim.apikey' => function() { 
-        return env('IMAGEOPTIM_APIKEY'); 
+        return getenv('IMAGEOPTIM_APIKEY'); 
     },
+];
+```
+
+**site/config/config.php (manual require class)**
+```php
+<?php
+// load dotenv plugins class
+require_once __DIR__ . '/../plugins/kirby3-dotenv/classes/DotEnv.php';
+
+return [
+    // ... other options
+    'bnomei.cloudconvert.apikey' => 
+        \Bnomei\DotEnv::getenv('CLOUDCONVERT_APIKEY'),
+    'bnomei.instagram.token' => 
+        \Bnomei\DotEnv::getenv('INSTAGRAM_TOKEN'),
+    'bnomei.thumbimageoptim.apikey' => 
+        \Bnomei\DotEnv::getenv('IMAGEOPTIM_APIKEY', 
+        // provide options if defaults of plugin are not valid
+        [
+            'dir' => __DIR__ . '/../',
+            'file' => '.env.dev',
+        ]
+    ),
 ];
 ```
 

@@ -10,7 +10,7 @@
          stopOnFailure="false">
     <testsuites>
         <testsuite name="PLUGIN">
-            <directory suffix="Test.php">./tests</directory>
+            <file>./tests/DotEnvTest.php</file>
         </testsuite>
     </testsuites>
     <php>

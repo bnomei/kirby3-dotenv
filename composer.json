@@ -1,7 +1,7 @@
 {
   "name": "bnomei/kirby3-dotenv",
   "type": "kirby-plugin",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Kirby 3 Plugin for environment variables from .env",
   "license": "MIT",
   "authors": [
@@ -42,6 +42,12 @@
     "dist": [
       "composer install --no-dev --optimize-autoloader",
       "git rm -rf --cached .; git add .;"
+    ],
+    "kirby": [
+      "composer install",
+      "composer update",
+      "composer install --working-dir=tests/kirby --no-dev --optimize-autoloader",
+      "composer update --working-dir=tests/kirby"
     ]
   },
   "require-dev": {

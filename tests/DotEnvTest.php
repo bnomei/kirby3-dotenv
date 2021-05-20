@@ -9,13 +9,15 @@ class DotEnvTest extends TestCase
 {
     public function setUp(): void
     {
-        copy(
-            __DIR__ . '/.env.example',
-            __DIR__ . '/.env'
-        );
+        if (!file_exists(__DIR__ . '/.env')) {
+            copy(
+                __DIR__ . '/.env.example',
+                __DIR__ . '/.env'
+            );
+        }
     }
 
-    public function tearDown(): void
+    public function removeDotEnvFile(): void
     {
         $dotenv = __DIR__ . '/.env';
         if (file_exists($dotenv)) {
@@ -33,18 +35,6 @@ class DotEnvTest extends TestCase
     {
         $dotenv = new Bnomei\DotEnv();
         $this->assertTrue($dotenv->isLoaded());
-    }
-
-    public function testLoadFailsIfMissingFile()
-    {
-        self::tearDown(); // early
-        $dotenv = new Bnomei\DotEnv();
-        $this->assertFalse($dotenv->isLoaded());
-
-        $dotenv = new Bnomei\DotEnv([
-            'dir' => null
-        ]);
-        $this->assertFalse($dotenv->isLoaded());
     }
 
     public function testRequired()
@@ -69,5 +59,32 @@ class DotEnvTest extends TestCase
     public function testStaticLoad()
     {
         $this->assertTrue(Bnomei\DotEnv::load());
+    }
+
+    public function testLoadedToPage()
+    {
+        $response = kirby()->render("/");
+        $this->assertTrue($response->code() === 200);
+        $this->assertMatchesRegularExpression('/(production)/', $response->body());
+    }
+
+    public function testLoadedFromConfig()
+    {
+        $this->assertEquals('bnomei', kirby()->option('no_callback'));
+    }
+
+    public function testLoadFailsIfMissingFile()
+    {
+        $this->removeDotEnvFile();
+
+        $dotenv = new Bnomei\DotEnv();
+        $this->assertFalse($dotenv->isLoaded());
+
+        $dotenv = new Bnomei\DotEnv([
+            'dir' => null,
+        ]);
+        $this->assertFalse($dotenv->isLoaded());
+
+        $this->setUp();
     }
 }

@@ -1,8 +1,8 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '1.2.3',
-    'version' => '1.2.3.0',
+    'pretty_version' => '1.3.0',
+    'version' => '1.3.0.0',
     'aliases' => 
     array (
     ),
@@ -13,8 +13,8 @@
   array (
     'bnomei/kirby3-dotenv' => 
     array (
-      'pretty_version' => '1.2.3',
-      'version' => '1.2.3.0',
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
       'aliases' => 
       array (
       ),
