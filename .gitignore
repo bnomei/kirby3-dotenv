@@ -3,6 +3,7 @@
 .idea
 *.cache
 
+/tests/.env
 /tests/kirby
 /tests/logs
 /tests/site/accounts

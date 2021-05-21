@@ -6,10 +6,14 @@ Kirby::plugin('bnomei/dotenv', [
     'options' => [
         'dir' => function (): string {
             return kirby()->roots()->index();
-        // return realpath(kirby()->roots()->index() . '/../');
+        // return realpath(kirby()->roots()->index() . '/../'); // public folder setup
         },
-        'filename' => '.env',
+        'file' => '.env',
         'required' => [],
+        'setup' => function ($dotenv) {
+            // overwrite to do additional tasks
+            return $dotenv;
+        }
     ],
     'pageMethods' => [
         'getenv' => function (string $env) {
@@ -17,6 +21,13 @@ Kirby::plugin('bnomei/dotenv', [
         },
     ],
 ]);
+
+if (! function_exists('loadenv')) {
+    function loadenv(array $options = [])
+    {
+        return \Bnomei\DotEnv::load($options);
+    }
+}
 
 if (! function_exists('env')) {
     function env(string $env)

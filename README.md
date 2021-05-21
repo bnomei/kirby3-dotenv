@@ -24,94 +24,57 @@ This plugin is free but if you use it in a commercial project please consider to
 
 ## Setup
 
-**.env file**
+### .env file Examples
+**/.env**
 ```
 APP_MODE=production
-APP_DEBUG=true
+APP_DEBUG=false
 ALGOLIA_APIKEY=12d7331a21d8a28b3069c49830f463e833e30f6d
 KIRBY_API_USER=bnomei
 KIRBY_API_PW=52d3a0edcc78be6c5645fdb7568f94d3d83d1c2a
 ```
 
-**plugin helper methods**
+**/.env.staging**
+```
+APP_MODE=staging
+APP_DEBUG=true
+ALGOLIA_APIKEY=950306d052ec893b467f2ca088daf2964b9f9530
+KIRBY_API_USER=notBnomei
+KIRBY_API_PW=37e30ad867ff3a427317dcd1852abbd692b39ffc
+```
+
+## Usage everywhere but in Config files
+
+> ATTENTION: The PHP functions `getenv` or `putenv` are not supported by this plugin since v2. Do use super globals `$_ENV`, `$_SERVER` or the plugins helper `env()`.
+
+**on server**
 ```php
-echo env('APP_MODE'); // production
+echo $_ENV['APP_MODE']; // production
+echo env('APP_DEBUG'); // false
 // or
 echo $page->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
 ```
 
-**plain php**
+**on staging server**
 ```php
-Bnomei\DotEnv::load();
-echo getenv('APP_DEBUG'); // true
+echo $_ENV['APP_MODE']; // staging
 echo env('APP_DEBUG'); // true
+// or
+echo $page->getenv('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
 ```
 
-### Using getenv() in the Kirby config file
+## Usage in Config files
 
-**site/config/config.php (callbacks only)**
-```php
-<?php
-return [
-    // ... other options
-    'bnomei.cloudconvert.apikey' => function() { 
-        return getenv('CLOUDCONVERT_APIKEY'); 
-    },
-    'bnomei.instagram.token' => function() { 
-        return getenv('INSTAGRAM_TOKEN'); 
-    },
-    'bnomei.thumbimageoptim.apikey' => function() { 
-        return getenv('IMAGEOPTIM_APIKEY'); 
-    },
-];
-```
-
-**site/config/config.php (manual require class)**
-```php
-<?php
-// load dotenv plugins class
-require_once __DIR__ . '/../plugins/kirby3-dotenv/classes/DotEnv.php';
-
-return [
-    // ... other options
-    'bnomei.cloudconvert.apikey' => 
-        \Bnomei\DotEnv::getenv('CLOUDCONVERT_APIKEY'),
-    'bnomei.instagram.token' => 
-        \Bnomei\DotEnv::getenv('INSTAGRAM_TOKEN'),
-    'bnomei.thumbimageoptim.apikey' => 
-        \Bnomei\DotEnv::getenv('IMAGEOPTIM_APIKEY', 
-        // provide options if defaults of plugin are not valid
-        [
-            'dir' => __DIR__ . '/../',
-            'file' => '.env.dev',
-        ]
-    ),
-];
-```
-
-#### No callback - no luck? 3 line are enough!
-Unless you preload the `Bnomei\DotEnv` class using an `include_once` statement yourself the class will not be available in the kirby config files. But some options take a `callback` not just a `string` value. If your desired option does not then consider reporting a github issue at **their** repository. Adding a callback for an option is 3 lines of work.
-
-**code/in/another/plugin.php**
-```php
-public function thisIsWereAllConfigValuesAreLoaded()
-{
-    $fancyOption = option('another.plugin.fancy');
-    // add these 3 lines
-    if (is_callable($fancyOptions)) {
-        $fancyOption = $fancyOption();
-    }
-}
-```
-
+See [config examples](https://github.com/bnomei/kirby3-dotenv/tree/master/tests/site/config) on how to use this plugin in combination with kirbys config files. Since v2 this plugin support Kirbys [Multi-environment setup](https://getkirby.com/docs/guide/configuration#multi-environment-setup) used to merging multiple config files.
 
 ## Settings
 
 | bnomei.dotenv.            | Default        | Description               |            
 |---------------------------|----------------|---------------------------|
 | dir | `callback` | returning `kirby()->roots()->index(). When installing Kirby 3 with Composer use a `function() { return realpath(kirby()->roots()->index() . '/../'); }` | 
-| filename | `.env` | |
+| file | `.env` | |
 | required | `[]` | You can define required variables in the Settings using an array. If any of these is missing a `RuntimeException` will be thrown. |
+| setup | `callback` | perform additional tasks on raw dotenv class instance |
 
 ## Dependencies
 

@@ -17,43 +17,48 @@ final class DotEnv
      */
     private $dotenv;
 
-    public function __construct(array $options = [], bool $fromConfig = true)
+    public function __construct(array $options = [], bool $useKirbyOptions = true)
     {
         $defaults = [
-            'dir' => $fromConfig ?
-                option('bnomei.dotenv.dir', kirby()->roots()->index()) :
+            'dir' => $useKirbyOptions ?
+                option('bnomei.dotenv.dir') :
                 realpath(__DIR__ . '/../../../../') // try plugin > site > index
             ,
-            'file' =>  $fromConfig ?
-                option('bnomei.dotenv.file', '.env') :
+            'file' =>  $useKirbyOptions ?
+                option('bnomei.dotenv.file') :
                 '.env'
             ,
-            'required' => $fromConfig ?
-                option('bnomei.dotenv.required', []) :
+            'required' => $useKirbyOptions ?
+                option('bnomei.dotenv.required') :
                 []
             ,
+            'setup' => $useKirbyOptions ?
+                option('bnomei.dotenv.setup') :
+                function ($dotenv) {
+                    return $dotenv;
+                },
         ];
         $options = array_merge($defaults, $options);
 
+        foreach (['dir', 'file'] as $key) {
+            $value = A::get($options, $key);
+            if ($value && is_callable($value) && ! is_string($value)) {
+                $options[$key] = $value();
+            }
+        }
+
+        $this->dotenv = null;
         $this->loadFromDir(A::get($options, 'dir'), A::get($options, 'file'));
         $this->addRequired(A::get($options, 'required'));
+        $this->dotenv = A::get($options, 'setup')($this->dotenv);
     }
 
-    private function loadFromDir($dir, $file = '.env'): bool
+    private function loadFromDir(string $dir, string $file): bool
     {
-        if (! $dir) {
+        if (! $dir || ! $file) {
             return false;
         }
-        if (is_callable($dir)) {
-            $dir = $dir();
-        }
-        if (! $file) {
-            return false;
-        }
-        if (is_callable($file)) {
-            $file = $file();
-        }
-        $this->dotenv = new \Dotenv\Dotenv($dir, $file);
+        $this->dotenv = \Dotenv\Dotenv::createMutable($dir, $file);
 
         try {
             $this->dotenv->load();
@@ -78,17 +83,18 @@ final class DotEnv
     }
 
     private static $singleton;
-    public static function load(array $options = [], bool $fromConfig = true): bool
+    public static function load(array $options = []): bool
     {
-        if (! self::$singleton) {
-            self::$singleton = new self($options, $fromConfig);
-        }
+        // always load anew
+        self::$singleton = new self($options, count($options) === 0);
         return self::$singleton->isLoaded();
     }
 
-    public static function getenv(string $env, array $options = [])
+    public static function getenv(string $env)
     {
-        self::load($options, count($options) === 0);
-        return getenv($env);
+        if (! self::$singleton) {
+            self::load();
+        }
+        return A::get($_ENV, $env, null);
     }
 }

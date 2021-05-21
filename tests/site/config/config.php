@@ -1,14 +1,17 @@
 <?php
 
-// load dotenv plugins class
-require_once __DIR__ . '/../../../classes/DotEnv.php';
-
 return [
-    'no_callback' => \Bnomei\DotEnv::getenv(
-        'KIRBY_API_USER',
-        [
-            'dir' => realpath(__DIR__ . '/../../'),
-            'file' => '.env',
-        ],
-    ),
+    // config will use default settings to load the env file
+    /*
+    'bnomei.dotenv.dir' => function (): string {
+        return kirby()->roots()->index();
+        // return realpath(kirby()->roots()->index() . '/../'); // public folder setup
+    },
+    'bnomei.dotenv.file' => '.env',
+    'bnomei.dotenv.required' => [],
+    */
+    'var_from_env' => function () {
+        // you can only use getenv inside of closures unless you load the class beforehand. see staging example.
+        return env('APP_MODE'); // "production" here but "staging" in staging
+    },
 ];

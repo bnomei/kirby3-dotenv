@@ -52,13 +52,38 @@ class DotEnvTest extends TestCase
 
     public function testGetenv()
     {
-        $myself = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertMatchesRegularExpression('/(bnomei)/', $myself);
+        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+        $this->assertEquals('bnomei', $user);
     }
 
     public function testStaticLoad()
     {
         $this->assertTrue(Bnomei\DotEnv::load());
+    }
+
+    public function testStaticLoadStaging()
+    {
+        // regular before
+        $this->assertTrue(Bnomei\DotEnv::load());
+        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+        $this->assertEquals('bnomei', $user);
+
+        // staging inbetween
+        $this->assertTrue(Bnomei\DotEnv::load([
+            'dir' => __DIR__,
+            'file' => '.env.staging',
+        ]));
+
+        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+        $this->assertEquals('notBnomei', $user);
+
+        $user = $_ENV['KIRBY_API_USER'];
+        $this->assertEquals('notBnomei', $user);
+
+        // regular again
+        $this->assertTrue(Bnomei\DotEnv::load());
+        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+        $this->assertEquals('bnomei', $user);
     }
 
     public function testLoadedToPage()
@@ -70,7 +95,8 @@ class DotEnvTest extends TestCase
 
     public function testLoadedFromConfig()
     {
-        $this->assertEquals('bnomei', kirby()->option('no_callback'));
+        $callback = kirby()->option('var_from_env'); // => a closure
+        $this->assertEquals('production', $callback());
     }
 
     public function testLoadFailsIfMissingFile()
@@ -81,7 +107,7 @@ class DotEnvTest extends TestCase
         $this->assertFalse($dotenv->isLoaded());
 
         $dotenv = new Bnomei\DotEnv([
-            'dir' => null,
+            'dir' => 'WRONG',
         ]);
         $this->assertFalse($dotenv->isLoaded());
 
