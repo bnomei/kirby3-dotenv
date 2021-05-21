@@ -16,6 +16,11 @@ This plugin is free but if you use it in a commercial project please consider to
 - [buy me ☕](https://buymeacoff.ee/bnomei) or
 - [buy a Kirby license using this affiliate link](https://a.paddle.com/v2/click/1129/35731?link=1170)
 
+## Similar Plugins
+
+- [beebmx/kirby-env](https://github.com/beebmx/kirby-env)
+- [johannschopplich/kirby-extended](https://github.com/johannschopplich/kirby-extended)
+
 ## Installation
 
 - unzip [master.zip](https://github.com/bnomei/kirby3-dotenv/archive/master.zip) as folder `site/plugins/kirby3-dotenv` or
@@ -53,6 +58,7 @@ echo $_ENV['APP_MODE']; // production
 echo env('APP_DEBUG'); // false
 // or
 echo $page->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
+echo $page->env('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
 ```
 
 **on staging server**
@@ -61,6 +67,7 @@ echo $_ENV['APP_MODE']; // staging
 echo env('APP_DEBUG'); // true
 // or
 echo $page->getenv('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
+echo $page->env('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
 ```
 
 ## Usage in Config files

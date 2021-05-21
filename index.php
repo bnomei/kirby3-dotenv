@@ -1,6 +1,7 @@
 <?php
 
 @include_once __DIR__ . '/vendor/autoload.php';
+@include_once __DIR__ . '/global.php';
 
 Kirby::plugin('bnomei/dotenv', [
     'options' => [
@@ -16,22 +17,11 @@ Kirby::plugin('bnomei/dotenv', [
         }
     ],
     'pageMethods' => [
+        'env' => function (string $env) {
+            return \Bnomei\DotEnv::getenv($env);
+        },
         'getenv' => function (string $env) {
             return \Bnomei\DotEnv::getenv($env);
         },
     ],
 ]);
-
-if (! function_exists('loadenv')) {
-    function loadenv(array $options = [])
-    {
-        return \Bnomei\DotEnv::load($options);
-    }
-}
-
-if (! function_exists('env')) {
-    function env(string $env)
-    {
-        return \Bnomei\DotEnv::getenv($env);
-    }
-}
