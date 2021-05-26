@@ -58,7 +58,7 @@ final class DotEnv
         if (! $dir || ! $file) {
             return false;
         }
-        $this->dotenv = \Dotenv\Dotenv::createMutable($dir, $file);
+        $this->dotenv = \Dotenv\Dotenv::createMutable(realpath($dir), $file);
 
         try {
             $this->dotenv->load();
