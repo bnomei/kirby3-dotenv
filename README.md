@@ -50,7 +50,10 @@ KIRBY_API_PW=37e30ad867ff3a427317dcd1852abbd692b39ffc
 
 ## Usage everywhere but in Config files
 
-> ATTENTION: The PHP functions `getenv` or `putenv` are not supported by this plugin since v2. Do use super globals `$_ENV`, `$_SERVER` or the plugins helper `env()`.
+> ⚠️ ATTENTION: The global PHP functions `getenv()` or `putenv()` are NOT supported by this plugin since v2. What will work...
+> - use super globals `$_ENV[]`, `$_SERVER[]` or 
+> - the plugins global helper function `env()` or
+> - `->getenv()`, `->env()` page and site methods
 
 **on server**
 ```php
@@ -59,6 +62,8 @@ echo env('APP_DEBUG'); // false
 // or
 echo $page->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
 echo $page->env('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
+echo site()->getenv('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
+echo site()->env('ALGOLIA_APIKEY'); // 12d7331a21d8a28b3069c49830f463e833e30f6d
 ```
 
 **on staging server**
@@ -68,6 +73,8 @@ echo env('APP_DEBUG'); // true
 // or
 echo $page->getenv('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
 echo $page->env('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
+echo site()->getenv('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
+echo site()->env('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
 ```
 
 ## Usage in Config files
@@ -78,7 +85,7 @@ See [config examples](https://github.com/bnomei/kirby3-dotenv/tree/master/tests/
 
 | bnomei.dotenv.            | Default        | Description               |            
 |---------------------------|----------------|---------------------------|
-| dir | `callback` | returning `kirby()->roots()->index(). When installing Kirby 3 with Composer use a `function() { return realpath(kirby()->roots()->index() . '/../'); }` | 
+| dir | `callback` | returning `kirby()->roots()->index().` When installing Kirby 3 with Composer use a `function() { return realpath(kirby()->roots()->index() . '/../'); }` | 
 | file | `.env` | |
 | required | `[]` | You can define required variables in the Settings using an array. If any of these is missing a `RuntimeException` will be thrown. |
 | setup | `callback` | perform additional tasks on raw dotenv class instance |

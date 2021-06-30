@@ -24,4 +24,12 @@ Kirby::plugin('bnomei/dotenv', [
             return \Bnomei\DotEnv::getenv($env);
         },
     ],
+    'siteMethods' => [
+        'env' => function (string $env) {
+            return \Bnomei\DotEnv::getenv($env);
+        },
+        'getenv' => function (string $env) {
+            return \Bnomei\DotEnv::getenv($env);
+        },
+    ],
 ]);
