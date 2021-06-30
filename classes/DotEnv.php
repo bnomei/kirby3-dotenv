@@ -55,12 +55,13 @@ final class DotEnv
 
     private function loadFromDir(string $dir, string $file): bool
     {
+        $dir = realpath($dir);
         if (! $dir || ! $file) {
             return false;
         }
-        $this->dotenv = \Dotenv\Dotenv::createMutable(realpath($dir), $file);
 
         try {
+            $this->dotenv = \Dotenv\Dotenv::createMutable($dir, $file);
             $this->dotenv->load();
         } catch (InvalidPathException $exc) {
             $this->dotenv = null;
