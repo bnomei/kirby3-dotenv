@@ -9,7 +9,7 @@
 
 Kirby 3 Plugin for environment variables from .env
 
-## Commerical Usage
+## Commercial Usage
 
 > <br>
 > <b>Support open source!</b><br><br>
