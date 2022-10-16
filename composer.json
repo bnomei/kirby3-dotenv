@@ -1,7 +1,7 @@
 {
   "name": "bnomei/kirby3-dotenv",
   "type": "kirby-plugin",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "Kirby 3 Plugin for environment variables from .env",
   "license": "MIT",
   "authors": [
@@ -24,10 +24,13 @@
     }
   },
   "config": {
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "getkirby/composer-installer": true
+    }
   },
   "require": {
-    "php": ">=7.3.0",
+    "php": ">=8.0",
     "getkirby/composer-installer": "^1.1",
     "vlucas/phpdotenv": "^5.3"
   },
