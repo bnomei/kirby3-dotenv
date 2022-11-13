@@ -38,7 +38,7 @@ Kirby 3 Plugin for environment variables from .env
 
 ### .env file Examples
 **/.env**
-```
+```dotenv
 APP_MODE=production
 APP_DEBUG=false
 ALGOLIA_APIKEY=12d7331a21d8a28b3069c49830f463e833e30f6d
@@ -47,7 +47,7 @@ KIRBY_API_PW=52d3a0edcc78be6c5645fdb7568f94d3d83d1c2a
 ```
 
 **/.env.staging**
-```
+```dotenv
 APP_MODE=staging
 APP_DEBUG=true
 ALGOLIA_APIKEY=950306d052ec893b467f2ca088daf2964b9f9530
