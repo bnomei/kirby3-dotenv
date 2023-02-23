@@ -88,6 +88,17 @@ echo site()->env('ALGOLIA_APIKEY'); // 37e30ad867ff3a427317dcd1852abbd692b39ffc
 
 See [config examples](https://github.com/bnomei/kirby3-dotenv/tree/master/tests/site/config) on how to use this plugin in combination with kirbys config files. Since v2 this plugin support Kirbys [Multi-environment setup](https://getkirby.com/docs/guide/configuration#multi-environment-setup) used to merging multiple config files.
 
+## Default values
+
+In case you want to provide a default value as fallback in case the environment variable is not set you can do that with the 2nd parameter in each helper function.
+
+```php
+ // `true` as default value
+echo env('ALGOLIA_ENABLED', true);
+```
+
+> Thanks for your PR @teichsta
+
 ## Settings
 
 | bnomei.dotenv.            | Default        | Description               |            

@@ -56,6 +56,12 @@ class DotEnvTest extends TestCase
         $this->assertEquals('bnomei', $user);
     }
 
+    public function testGetenvDefaultValue()
+    {
+        $user = Bnomei\DotEnv::getenv('NOT_IN_ENV', 'bnomei');
+        $this->assertEquals('bnomei', $user);
+    }
+
     public function testStaticLoad()
     {
         $this->assertTrue(Bnomei\DotEnv::load());
