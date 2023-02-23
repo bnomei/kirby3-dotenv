@@ -92,11 +92,11 @@ final class DotEnv
         return self::$singleton->isLoaded();
     }
 
-    public static function getenv(string $env)
+    public static function getenv(string $env, mixed $default = null)
     {
         if (! self::$singleton) {
             self::load();
         }
-        return A::get($_ENV, $env, null);
+        return A::get($_ENV, $env, $default);
     }
 }

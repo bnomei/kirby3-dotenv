@@ -17,19 +17,19 @@ Kirby::plugin('bnomei/dotenv', [
         }
     ],
     'pageMethods' => [
-        'env' => function (string $env) {
-            return \Bnomei\DotEnv::getenv($env);
+        'env' => function (string $env, mixed $default = null) {
+            return \Bnomei\DotEnv::getenv($env, $default);
         },
-        'getenv' => function (string $env) {
-            return \Bnomei\DotEnv::getenv($env);
+        'getenv' => function (string $env, mixed $default = null) {
+            return \Bnomei\DotEnv::getenv($env, $default);
         },
     ],
     'siteMethods' => [
-        'env' => function (string $env) {
-            return \Bnomei\DotEnv::getenv($env);
+        'env' => function (string $env, mixed $default = null) {
+            return \Bnomei\DotEnv::getenv($env, $default);
         },
-        'getenv' => function (string $env) {
-            return \Bnomei\DotEnv::getenv($env);
+        'getenv' => function (string $env, mixed $default = null) {
+            return \Bnomei\DotEnv::getenv($env, $default);
         },
     ],
 ]);

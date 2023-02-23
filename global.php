@@ -11,8 +11,8 @@ if (! function_exists('loadenv')) {
 }
 
 if (! function_exists('env')) {
-    function env(string $env)
+    function env(string $env, mixed $default = null)
     {
-        return \Bnomei\DotEnv::getenv($env);
+        return \Bnomei\DotEnv::getenv($env, $default);
     }
 }
