@@ -18,56 +18,21 @@ final class DotEnv
 
     public function __construct(array $options = [], bool $canUseKirbyOptions = true)
     {
-        $defaults = $canUseKirbyOptions ? [
-            'debug' => option('debug'),
-            'dir' => option('bnomei.dotenv.dir'),
-            'file' => option('bnomei.dotenv.file'),
-            'environment' => option('bnomei.dotenv.environment'),
-            'required' => option('bnomei.dotenv.required'),
-            'setup' => option('bnomei.dotenv.setup'),
-        ] : [
-            'debug' => false,
-            'dir' => [],
-            'file' => '.env',
-            'environment' => null,
-            'required' => [],
-            'setup' => function ($dotenv) {
+        $defaults = [
+            'debug' => $canUseKirbyOptions ? option('debug') : false,
+            'dir' => $canUseKirbyOptions ? option('bnomei.dotenv.dir') : [],
+            'file' => $canUseKirbyOptions ? option('bnomei.dotenv.file') : '.env',
+            'environment' => $canUseKirbyOptions ? option('bnomei.dotenv.environment') : null,
+            'required' => $canUseKirbyOptions ? option('bnomei.dotenv.required') : [],
+            'setup' => $canUseKirbyOptions ? option('bnomei.dotenv.setup') : function ($dotenv) {
                 return $dotenv;
             },
         ];
         $this->options = array_merge($defaults, $options);
 
-        // allow callback for a few options
-        foreach ($this->options as $key => $value) {
-            if ($value instanceof Closure && in_array($key, ['dir', 'file', 'environment', 'required'])) {
-                $this->options[$key] = $value();
-            }
-        }
-
-        // try multiple reasonable dirs
-        $dirs = $this->options['dir'];
-        if (! is_array($dirs)) {
-            $dirs = [$dirs];
-        }
-        foreach ($dirs as $dir) {
-            if (empty($dir)) {
-                continue;
-            }
-            // more specific file first as it will break on first success
-            $files = [
-                $this->options['file'].'.'.$this->options['environment'],
-                $this->options['file'],
-            ];
-            foreach ($files as $file) {
-                if ($this->loadFromDir($dir, $file)) {
-                    break;
-                }
-            }
-        }
-
-        // add rules for required env vars
+        $this->allowCallbackForAFewOptions();
+        $this->tryMultipleReasonableDirs();
         $this->addRequired($this->options['required']);
-
         // allow additional last step setup
         $this->dotenv = $this->options['setup']($this->dotenv);
     }
@@ -75,6 +40,29 @@ final class DotEnv
     public function option(string $key): mixed
     {
         return A::get($this->options, $key);
+    }
+
+    private function tryMultipleReasonableDirs(): void
+    {
+        // try multiple reasonable dirs
+        $dirs = $this->options['dir'];
+        if (! is_array($dirs)) {
+            $dirs = [$dirs];
+        }
+        $dirs = array_filter($dirs, function ($dir) {
+            return ! empty($dir);
+        });
+        $files = [
+            $this->options['file'].'.'.$this->options['environment'],
+            $this->options['file'],
+        ];
+        foreach ($dirs as $dir) {
+            foreach ($files as $file) {
+                if ($this->loadFromDir($dir, $file)) {
+                    break 2;
+                }
+            }
+        }
     }
 
     private function loadFromDir(string $dir, string $file): bool
@@ -131,5 +119,15 @@ final class DotEnv
         }
 
         return A::get($_ENV, $env, $default);
+    }
+
+    public function allowCallbackForAFewOptions(): void
+    {
+        // allow callback for a few options
+        foreach ($this->options as $key => $value) {
+            if ($value instanceof Closure && in_array($key, ['dir', 'file', 'environment', 'required'])) {
+                $this->options[$key] = $value();
+            }
+        }
     }
 }
