@@ -4,60 +4,84 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use Closure;
 use Dotenv\Exception\InvalidPathException;
 use Kirby\Toolkit\A;
-use Kirby\Toolkit\F;
 
-use function getenv;
 use function option;
 
 final class DotEnv
 {
-    /*
-     * @var \Dotenv\Dotenv
-     */
-    private $dotenv;
+    private ?\Dotenv\Dotenv $dotenv = null;
 
-    public function __construct(array $options = [], bool $useKirbyOptions = true)
+    private array $options;
+
+    public function __construct(array $options = [], bool $canUseKirbyOptions = true)
     {
-        $defaults = [
-            'dir' => $useKirbyOptions ?
-                option('bnomei.dotenv.dir') :
-                realpath(__DIR__ . '/../../../../') // try plugin > site > index
-            ,
-            'file' =>  $useKirbyOptions ?
-                option('bnomei.dotenv.file') :
-                '.env'
-            ,
-            'required' => $useKirbyOptions ?
-                option('bnomei.dotenv.required') :
-                []
-            ,
-            'setup' => $useKirbyOptions ?
-                option('bnomei.dotenv.setup') :
-                function ($dotenv) {
-                    return $dotenv;
-                },
+        $defaults = $canUseKirbyOptions ? [
+            'debug' => option('debug'),
+            'dir' => option('bnomei.dotenv.dir'),
+            'file' => option('bnomei.dotenv.file'),
+            'environment' => option('bnomei.dotenv.environment'),
+            'required' => option('bnomei.dotenv.required'),
+            'setup' => option('bnomei.dotenv.setup'),
+        ] : [
+            'debug' => false,
+            'dir' => [],
+            'file' => '.env',
+            'environment' => null,
+            'required' => [],
+            'setup' => function ($dotenv) {
+                return $dotenv;
+            },
         ];
-        $options = array_merge($defaults, $options);
+        $this->options = array_merge($defaults, $options);
 
-        foreach (['dir', 'file'] as $key) {
-            $value = A::get($options, $key);
-            if ($value && is_callable($value) && ! is_string($value)) {
-                $options[$key] = $value();
+        // allow callback for a few options
+        foreach ($this->options as $key => $value) {
+            if ($value instanceof Closure && in_array($key, ['dir', 'file', 'environment', 'required'])) {
+                $this->options[$key] = $value();
             }
         }
 
-        $this->dotenv = null;
-        $this->loadFromDir(A::get($options, 'dir'), A::get($options, 'file'));
-        $this->addRequired(A::get($options, 'required'));
-        $this->dotenv = A::get($options, 'setup')($this->dotenv);
+        // try multiple reasonable dirs
+        $dirs = $this->options['dir'];
+        if (! is_array($dirs)) {
+            $dirs = [$dirs];
+        }
+        foreach ($dirs as $dir) {
+            if (empty($dir)) {
+                continue;
+            }
+            // more specific file first as it will break on first success
+            $files = [
+                $this->options['file'].'.'.$this->options['environment'],
+                $this->options['file'],
+            ];
+            foreach ($files as $file) {
+                if ($this->loadFromDir($dir, $file)) {
+                    break;
+                }
+            }
+        }
+
+        // add rules for required env vars
+        $this->addRequired($this->options['required']);
+
+        // allow additional last step setup
+        $this->dotenv = $this->options['setup']($this->dotenv);
+    }
+
+    public function option(string $key): mixed
+    {
+        return A::get($this->options, $key);
     }
 
     private function loadFromDir(string $dir, string $file): bool
     {
+        // fail silently as we are trying multiple dirs that might not exist
         $dir = realpath($dir);
-        if (! $dir || ! $file) {
+        if (! $dir || ! file_exists($dir.'/'.$file)) {
             return false;
         }
 
@@ -65,9 +89,15 @@ final class DotEnv
             $this->dotenv = \Dotenv\Dotenv::createMutable($dir, $file);
             $this->dotenv->load();
         } catch (InvalidPathException $exc) {
+            // file exists but is not readable
+            if ($this->option('debug')) {
+                throw $exc;
+            }
             $this->dotenv = null;
+
             return false;
         }
+
         return true;
     }
 
@@ -84,19 +114,22 @@ final class DotEnv
         $this->dotenv->required($required);
     }
 
-    private static $singleton;
-    public static function load(array $options = []): bool
+    private static ?self $singleton = null;
+
+    public static function load(array $options = [], bool $canUseKirbyOptions = true): bool
     {
         // always load anew
-        self::$singleton = new self($options, count($options) === 0);
+        self::$singleton = new self($options, $canUseKirbyOptions);
+
         return self::$singleton->isLoaded();
     }
 
-    public static function getenv(string $env, mixed $default = null)
+    public static function getenv(string $env, mixed $default = null): mixed
     {
         if (! self::$singleton) {
             self::load();
         }
+
         return A::get($_ENV, $env, $default);
     }
 }

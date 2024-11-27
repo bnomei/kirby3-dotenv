@@ -1,122 +1,119 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use Bnomei\DotEnv;
-use PHPUnit\Framework\TestCase;
-
-class DotEnvTest extends TestCase
+require_once __DIR__.'/../vendor/autoload.php';
+beforeEach(function () {
+    if (! file_exists(__DIR__.'/.env')) {
+        copy(
+            __DIR__.'/.env.example',
+            __DIR__.'/.env'
+        );
+    }
+});
+function removeDotEnvFile(): void
 {
-    public function setUp(): void
-    {
-        if (!file_exists(__DIR__ . '/.env')) {
-            copy(
-                __DIR__ . '/.env.example',
-                __DIR__ . '/.env'
-            );
-        }
-    }
-
-    public function removeDotEnvFile(): void
-    {
-        $dotenv = __DIR__ . '/.env';
-        if (file_exists($dotenv)) {
-            unlink($dotenv);
-        }
-    }
-
-    public function testConstruct()
-    {
-        $dotenv = new Bnomei\DotEnv();
-        $this->assertInstanceOf(Bnomei\DotEnv::class, $dotenv);
-    }
-
-    public function testLoad()
-    {
-        $dotenv = new Bnomei\DotEnv();
-        $this->assertTrue($dotenv->isLoaded());
-    }
-
-    public function testRequired()
-    {
-        $dotenv = new Bnomei\DotEnv([
-            'required' => ['APP_MODE']
-        ]);
-        $this->assertTrue($dotenv->isLoaded());
-
-        $this->expectExceptionMessageMatches('/(One or more environment variables failed assertions: DATABASE_DSN is missing)/');
-        $dotenv = new Bnomei\DotEnv([
-            'required' => ['DATABASE_DSN']
-        ]);
-    }
-
-    public function testGetenv()
-    {
-        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertEquals('bnomei', $user);
-    }
-
-    public function testGetenvDefaultValue()
-    {
-        $user = Bnomei\DotEnv::getenv('NOT_IN_ENV', 'bnomei');
-        $this->assertEquals('bnomei', $user);
-    }
-
-    public function testStaticLoad()
-    {
-        $this->assertTrue(Bnomei\DotEnv::load());
-    }
-
-    public function testStaticLoadStaging()
-    {
-        // regular before
-        $this->assertTrue(Bnomei\DotEnv::load());
-        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertEquals('bnomei', $user);
-
-        // staging inbetween
-        $this->assertTrue(Bnomei\DotEnv::load([
-            'dir' => __DIR__,
-            'file' => '.env.staging',
-        ]));
-
-        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertEquals('notBnomei', $user);
-
-        $user = $_ENV['KIRBY_API_USER'];
-        $this->assertEquals('notBnomei', $user);
-
-        // regular again
-        $this->assertTrue(Bnomei\DotEnv::load());
-        $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
-        $this->assertEquals('bnomei', $user);
-    }
-
-    public function testLoadedToPage()
-    {
-        $response = kirby()->render("/");
-        $this->assertTrue($response->code() === 200);
-        $this->assertMatchesRegularExpression('/(production)/', $response->body());
-    }
-
-    public function testLoadedFromConfig()
-    {
-        $callback = kirby()->option('var_from_env'); // => a closure
-        $this->assertEquals('production', $callback());
-    }
-
-    public function testLoadFailsIfMissingFile()
-    {
-        $this->removeDotEnvFile();
-
-        $dotenv = new Bnomei\DotEnv();
-        $this->assertFalse($dotenv->isLoaded());
-
-        $dotenv = new Bnomei\DotEnv([
-            'dir' => 'WRONG',
-        ]);
-        $this->assertFalse($dotenv->isLoaded());
-
-        $this->setUp();
+    $dotenv = __DIR__.'/.env';
+    if (file_exists($dotenv)) {
+        unlink($dotenv);
     }
 }
+// defaults are needed for tests as it does
+// not have the context of the plugin with
+// the kirby instance and option() helper
+function defaults(): array
+{
+    return [
+        'dir' => __DIR__,
+        'file' => '.env',
+    ];
+}
+
+test('construct', function () {
+    $dotenv = new Bnomei\DotEnv(defaults());
+    expect($dotenv)->toBeInstanceOf(Bnomei\DotEnv::class);
+});
+test('load', function () {
+    $dotenv = new Bnomei\DotEnv(defaults());
+    expect($dotenv->isLoaded())->toBeTrue();
+});
+test('required', function () {
+    $dotenv = new Bnomei\DotEnv(defaults() + [
+        'required' => ['APP_MODE'],
+    ]);
+    expect($dotenv->isLoaded())->toBeTrue();
+
+    $this->expectExceptionMessageMatches('/(One or more environment variables failed assertions: DATABASE_DSN is missing)/');
+    $dotenv = new Bnomei\DotEnv(defaults() + [
+        'required' => ['DATABASE_DSN'],
+    ]);
+});
+test('static load', function () {
+    expect(Bnomei\DotEnv::load(defaults()))->toBeTrue();
+});
+test('getenv', function () {
+    Bnomei\DotEnv::load(defaults());
+    $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+    expect($user)->toEqual('bnomei');
+});
+test('getenv default value', function () {
+    Bnomei\DotEnv::load(defaults());
+    $user = Bnomei\DotEnv::getenv('NOT_IN_ENV', 'bnomei');
+    expect($user)->toEqual('bnomei');
+});
+
+test('static load staging', function () {
+    // regular before
+    expect(Bnomei\DotEnv::load(defaults()))->toBeTrue();
+    $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+    expect($user)->toEqual('bnomei');
+
+    // staging in between
+    expect(Bnomei\DotEnv::load([
+        'dir' => __DIR__,
+        'file' => '.env.dotenv.test',
+    ]))->toBeTrue();
+
+    $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+    expect($user)->toEqual('notBnomei');
+
+    $user = $_ENV['KIRBY_API_USER'];
+    expect($user)->toEqual('notBnomei');
+
+    // regular again
+    expect(Bnomei\DotEnv::load(defaults()))->toBeTrue();
+    $user = Bnomei\DotEnv::getenv('KIRBY_API_USER');
+    expect($user)->toEqual('bnomei');
+});
+test('loaded to page', function () {
+    // Bnomei\DotEnv::load(defaults());
+    $response = kirby()->render('/');
+    expect($response->code() === 200)->toBeTrue();
+    expect($response->body())->toMatch('/(production)/');
+});
+test('loaded from config', function () {
+    // Bnomei\DotEnv::load(defaults());
+    $callback = kirby()->option('var_from_env');
+    // => a closure
+    expect($callback())->toEqual('production');
+});
+test('loaded from config based on environment/host', function () {
+    $response = \Kirby\Http\Remote::get('http://dotenv.test');
+    expect($response->code() === 200)->toBeTrue()
+        ->and($response->content())->toEqual('staging');
+
+    $response = \Kirby\Http\Remote::get('http://dotex.test');
+    expect($response->code() === 200)->toBeTrue()
+        ->and($response->content())->toEqual('production');
+})->skipOnLinux();
+test('load fails if missing file', function () {
+    removeDotEnvFile();
+
+    $dotenv = new Bnomei\DotEnv(defaults());
+    expect($dotenv->isLoaded())->toBeFalse();
+
+    $dotenv = new Bnomei\DotEnv([
+        'dir' => 'WRONG',
+    ]);
+    expect($dotenv->isLoaded())->toBeFalse();
+
+    $this->setUp();
+});

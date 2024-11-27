@@ -1,8 +1,8 @@
 {
   "name": "bnomei/kirby3-dotenv",
   "type": "kirby-plugin",
-  "version": "2.2.0",
-  "description": "Kirby 3 Plugin for environment variables from .env",
+  "version": "5.0.0",
+  "description": "Kirby Plugin for environment variables from .env",
   "license": "MIT",
   "authors": [
     {
@@ -11,9 +11,12 @@
     }
   ],
   "keywords": [
-    "kirby3",
-    "kirby3-cms",
-    "kirby3-plugin",
+    "kirby",
+    "kirby-cms",
+    "kirby-plugin",
+    ".env",
+    "enviroment",
+    "ENV",
     "dotenv",
     "dotenv-loader",
     "enviroment-variables"
@@ -21,28 +24,37 @@
   "autoload": {
     "psr-4": {
       "Bnomei\\": "classes/"
-    }
+    },
+    "files": [
+      "global.php"
+    ]
   },
   "config": {
     "optimize-autoloader": true,
     "allow-plugins": {
-      "getkirby/composer-installer": true
+      "getkirby/composer-installer": true,
+      "pestphp/pest-plugin": true
     }
   },
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.2",
     "getkirby/composer-installer": "^1.1",
     "vlucas/phpdotenv": "^5.3"
   },
+  "require-dev": {
+    "getkirby/cms": "^5.0.0-alpha.4",
+    "larastan/larastan": "^v3.0.0",
+    "laravel/pint": "^1.13",
+    "pestphp/pest": "^v3.5.1",
+    "spatie/ray": "^1.39",
+    "getkirby/cli": "^1.5"
+  },
   "scripts": {
-    "analyze": "phpstan analyse classes",
-    "fix": "php-cs-fixer fix",
-    "test": [
-      "mkdir -p tests/logs",
-      "@putenv XDEBUG_MODE=coverage",
-      "phpunit --configuration ./phpunit.xml"
-    ],
+    "stan": "./vendor/bin/phpstan",
+    "fix": "./vendor/bin/pint",
+    "test": "./vendor/bin/pest --profile",
     "dist": [
+      "composer fix",
       "composer install --no-dev --optimize-autoloader",
       "git rm -rf --cached .; git add .;"
     ],
@@ -50,13 +62,10 @@
       "composer install",
       "composer update",
       "composer install --working-dir=tests/kirby --no-dev --optimize-autoloader",
-      "composer update --working-dir=tests/kirby"
+      "composer update --working-dir=tests/kirby",
+      "sed -i.bak 's/function dump(/function xdump(/g' tests/kirby/config/helpers.php",
+      "sed -i.bak 's/function e(/function xe(/g' tests/kirby/config/helpers.php"
     ]
-  },
-  "require-dev": {
-    "getkirby/cms": "^3.5",
-    "php-coveralls/php-coveralls": "^2.1",
-    "phpunit/phpunit": "^9.5"
   },
   "extra": {
     "kirby-cms-path": "tests/kirby"
@@ -64,7 +73,6 @@
   "suggest": {
     "bnomei/kirby3-lapse": "For faster and automatic caching based on modification of Kirby Objects",
     "bnomei/kirby3-janitor": "Use a Panel Button or PHP code to clear the cache",
-    "bnomei/kirby3-security-headers": "CPS headers to make the the web a saver place. Sensible defaults with zero configuration.",
-    "robinscholz/better-rest": "Allows you to send authenticated GET requests querying the Kirby API"
+    "bnomei/kirby3-security-headers": "CPS headers to make the the web a saver place. Sensible defaults with zero configuration."
   }
 }
