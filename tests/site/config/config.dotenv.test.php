@@ -1,9 +1,9 @@
 <?php
 
-//require_once __DIR__.'/../../../global.php';
-//// require_once __DIR__ . '/../plugins/kirby3-dotenv/global.php';
+// require_once __DIR__.'/../../../global.php';
+// // require_once __DIR__ . '/../plugins/kirby3-dotenv/global.php';
 //
-//loadenv();
+// loadenv();
 
 return [
     'editor' => 'phpstorm',
