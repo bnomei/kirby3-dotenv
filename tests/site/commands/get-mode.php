@@ -1,11 +1,13 @@
 <?php
 
+use Kirby\CLI\CLI;
+
 // env KIRBY_HOST=dotenv.test kirby get-mode
 // env KIRBY_HOST=dotex.test kirby get-mode
 return [
     'description' => 'get APP_MODE',
     'args' => [],
-    'command' => static function (\Kirby\CLI\CLI $cli): void {
+    'command' => static function (CLI $cli): void {
 
         $cli->out($cli->kirby()->environment()->host());
 

@@ -52,10 +52,11 @@ echo site()->env('ALGOLIA_APIKEY');    // 12d7331...
 ### on local or staging test server
 
 You can also create files to have different settings for different environments.
-The plugin will try to automatically load the correct file based on the environment.
+Set the environment explicitly with `KIRBY_HOST` or with the `bnomei.dotenv.environment` option.
+The plugin does not use the request `Host` header as a trusted environment selector by default.
 
-Based on an environment like 
-- http://dotenv.test matching a 
+Based on an environment like
+- `KIRBY_HOST=dotenv.test` or a `bnomei.dotenv.environment` option returning `dotenv.test`,
 - `/site/config/config.dotenv.test.php` Kirby configuration file and given a 
 - `/.env.dotenv.test` file.
 
@@ -73,6 +74,32 @@ KIRBY_API_PW=37e30ad867ff3a427317dcd1852abbd692b39ffc
 echo $_ENV['APP_MODE']; // staging
 echo env('APP_DEBUG');  // true
 // ...
+```
+
+**/site/config/config.php**
+```php
+<?php
+
+return [
+    'bnomei.dotenv.environment' => function () {
+        return 'dotenv.test';
+    },
+];
+```
+
+If you intentionally want to select dotenv profiles from request hosts, use an explicit allowlist in your own callback:
+
+```php
+<?php
+
+return [
+    'bnomei.dotenv.environment' => function () {
+        $host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+        $allowed = ['dotenv.test', 'staging.example.com'];
+
+        return in_array($host, $allowed, true) ? $host : '';
+    },
+];
 ```
 
 ## Default values
@@ -156,6 +183,10 @@ If you set environment variables in your server configuration these will be avai
 > This plugin will load environment variables from `.env` files and potentially overwrite existing environment
 > variables.
 
+> [!WARNING]
+> Do not keep staging, test or other non-production dotenv files in production dotenv directories unless your
+> `bnomei.dotenv.environment` callback uses a trusted explicit value or an allowlist.
+
 ## In the CLI
 
 When running Kirby commands in the CLI make sure you prefix the command with the environment variable for the HOST you want to use.
@@ -175,7 +206,7 @@ env KIRBY_HOST=dotenv.test kirby my:command
 |----------------|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | dir            | `callback`       | returning `kirby()->roots()->index().` When installing Kirby 3 with Composer use a `function() { return realpath(kirby()->roots()->index() . '/../'); }` | 
 | file           | `.env`           |                                                                                                                                                          |
-| environment    | `callback`       | auto-detection for the current environment                                                                                                               |
+| environment    | `callback`       | trusted current environment selector; defaults to `KIRBY_HOST` only                                                                                      |
 | required       | `callback or []` | You can define required variables in the settings using an array. If any of these is missing a `RuntimeException` will be thrown.                        |
 | setup          | `callback`       | perform additional tasks on raw dotenv class instance                                                                                                    |
 

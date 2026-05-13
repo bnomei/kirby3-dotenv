@@ -52,10 +52,10 @@ final class DotEnv
         $dirs = array_filter($dirs, function ($dir) {
             return ! empty($dir);
         });
-        $files = [
-            $this->options['file'].'.'.$this->options['environment'],
+        $files = array_filter([
+            empty($this->options['environment']) ? null : $this->options['file'].'.'.$this->options['environment'],
             $this->options['file'],
-        ];
+        ]);
         foreach ($dirs as $dir) {
             foreach ($files as $file) {
                 if ($this->loadFromDir($dir, $file)) {

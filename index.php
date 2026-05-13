@@ -16,15 +16,11 @@ Kirby::plugin('bnomei/dotenv', [
         },
         'file' => '.env',
         'environment' => function (): string {
-            $hosts = [
-                A::get($_ENV, 'KIRBY_HOST'),
-                A::get($_SERVER, 'HTTP_HOST'), // insecure
-                A::get($_SERVER, 'SERVER_NAME'),
-                A::get($_SERVER, 'SERVER_ADDR'),
-            ];
+            $host = A::get($_ENV, 'KIRBY_HOST')
+                ?? A::get($_SERVER, 'KIRBY_HOST')
+                ?? getenv('KIRBY_HOST');
 
-            // first non-empty value get non-port part
-            return explode(':', strval(A::first(array_filter($hosts))))[0];
+            return explode(':', strval($host ?: ''))[0];
         },
         'required' => [],
         'setup' => function ($dotenv) {
