@@ -8,7 +8,6 @@ parameters:
 
     ignoreErrors:
         # - '#Undefined variable: \$this#'
-        - '/Parameter #1 \$value of function strval expects/'
         - '#Call to an undefined method Kirby\\Cms\\Ingredients::index\(\)#'
         -
             identifier: missingType.iterableValue
