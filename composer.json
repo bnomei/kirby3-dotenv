@@ -68,7 +68,10 @@
     ]
   },
   "extra": {
-    "kirby-cms-path": "tests/kirby"
+    "kirby-cms-path": "tests/kirby",
+    "kirby": {
+      "compatible": "^5.0 || ^6.0"
+    }
   },
   "suggest": {
     "bnomei/kirby3-lapse": "For faster and automatic caching based on modification of Kirby Objects",
