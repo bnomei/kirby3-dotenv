@@ -11,6 +11,7 @@ beforeEach(function () {
             __DIR__.'/.env'
         );
     }
+    DotEnv::load(defaults());
 });
 function removeDotEnvFile(): void
 {
